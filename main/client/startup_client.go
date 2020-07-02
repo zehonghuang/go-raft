@@ -6,6 +6,7 @@ import (
 	"go-raft/rpc"
 	_ "go-raft/rpc"
 	"google.golang.org/grpc"
+	"log"
 )
 
 func main() {
@@ -39,5 +40,12 @@ func main() {
 	if err1 != nil {
 		fmt.Println(err1)
 	}
-	fmt.Println(response)
+	for {
+		aa, err := response.Recv()
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		log.Println(aa)
+	}
 }

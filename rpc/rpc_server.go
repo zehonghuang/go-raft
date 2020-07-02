@@ -1,25 +1,36 @@
 package rpc
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
-	"google.golang.org/grpc"
+	grpc "google.golang.org/grpc"
 	"log"
 	"net"
 )
 
-type server struct {
+type Server struct {
 }
 
-func (*server) PreVote(ctx context.Context, req *RequestVoteRequest) (*RequestVoteResponse, error) {
-	fmt.Println(req)
-	granted := true
-	term := int64(100)
-	return &RequestVoteResponse{Granted: &granted, Term: &term}, nil
+func (*Server) PreVote(r *RequestVoteRequest, s RaftService_PreVoteServer) error {
+	return func(r *RequestVoteRequest, s RaftService_PreVoteServer) error {
+		reqJson, err := json.Marshal(r)
+		if err != nil {
+			log.Println("what ??")
+		}
+		log.Println(string(reqJson))
+		granted := true
+		term := int64(100)
+		s.Send(&RequestVoteResponse{Granted: &granted, Term: &term})
+		return nil
+	}(r, s)
 }
 
-func (*server) RequestVote(context.Context, *RequestVoteRequest) (*RequestVoteResponse, error) {
-	return nil, nil
+func handlerPreVoteHRequest(r *RequestVoteRequest, s RaftService_PreVoteServer) {
+
+}
+
+func (*Server) RequestVote(*RequestVoteRequest, RaftService_RequestVoteServer) error {
+	return nil
 }
 
 func StartedServer(port *int) {
@@ -28,7 +39,7 @@ func StartedServer(port *int) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
-	RegisterRaftServiceServer(grpcServer, &server{})
+	grpcServer := grpc.NewServer(grpc.EmptyServerOption{})
+	RegisterRaftServiceServer(grpcServer, &Server{})
 	grpcServer.Serve(lis)
 }

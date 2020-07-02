@@ -28,7 +28,7 @@ message RequestVoteResponse {
 };
 
 service RaftService {
-  rpc preVote(RequestVoteRequest) returns (RequestVoteResponse);
+  rpc preVote(RequestVoteRequest) returns (stream RequestVoteResponse);
 
-  rpc requestVote(RequestVoteRequest) returns (RequestVoteResponse);
+  rpc requestVote(RequestVoteRequest) returns (stream RequestVoteResponse);
 };
