@@ -1,0 +1,65 @@
+package main
+
+import (
+	"fmt"
+	"sync/atomic"
+)
+
+type MyAtomic interface {
+	IncreaseAllEles()
+	IncreaseA()
+	IncreaseB()
+}
+type NoPad struct {
+	a uint64
+	b uint64
+	c uint64
+}
+
+func (myatomic *NoPad) IncreaseAllEles() {
+	atomic.AddUint64(&myatomic.a, 1)
+	atomic.AddUint64(&myatomic.b, 1)
+	atomic.AddUint64(&myatomic.c, 1)
+}
+
+func (myatomic *NoPad) IncreaseA() {
+	atomic.AddUint64(&myatomic.a, 1)
+	//atomic.AddUint64(&myatomic.b, 1)
+	//atomic.AddUint64(&myatomic.c, 1)
+}
+
+func (myatomic *NoPad) IncreaseB() {
+	//atomic.AddUint64(&myatomic.a, 1)
+	atomic.AddUint64(&myatomic.b, 1)
+	//atomic.AddUint64(&myatomic.c, 1)
+}
+
+type Pad struct {
+	a   uint64
+	_p1 [7]uint64
+	b   uint64
+	_p2 [7]uint64
+	c   uint64
+	_p3 [7]uint64
+}
+
+func (myatomic *Pad) IncreaseAllEles() {
+	atomic.AddUint64(&myatomic.a, 1)
+	atomic.AddUint64(&myatomic.b, 1)
+	atomic.AddUint64(&myatomic.c, 1)
+}
+func (myatomic *Pad) IncreaseA() {
+	atomic.AddUint64(&myatomic.a, 1)
+	//atomic.AddUint64(&myatomic.b, 1)
+	//atomic.AddUint64(&myatomic.c, 1)
+}
+func (myatomic *Pad) IncreaseB() {
+	//atomic.AddUint64(&myatomic.a, 1)
+	atomic.AddUint64(&myatomic.b, 1)
+	//atomic.AddUint64(&myatomic.c, 1)
+}
+func main() {
+	myatomic := &Pad{}
+	myatomic.IncreaseAllEles()
+	fmt.Printf("%d\n", myatomic.a)
+}

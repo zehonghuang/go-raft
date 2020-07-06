@@ -42,10 +42,13 @@ func (r *RingBuffer) NextInc(value int64) int64 {
 	return r.sequencer.NextInc(value)
 }
 
-func (r *RingBuffer) PublishEvent(translator func(interface{}, int64)) bool {
+func (r *RingBuffer) PublishEvent(translator func(interface{}, int64)) {
 	seq := r.sequencer.Next()
-	translator(nil, seq) //TODO
-	return true
+	translator(r.get(seq), seq) //TODO
+}
+
+func (r *RingBuffer) get(sequence int64) interface{} {
+	return nil
 }
 
 type Sequence struct {
